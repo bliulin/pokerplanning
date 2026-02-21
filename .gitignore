@@ -1,0 +1,23 @@
+node_modules/
+
+# Remix build output
+/build/
+/.cache/
+
+# Vite
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
