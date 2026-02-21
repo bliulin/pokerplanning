@@ -22,18 +22,24 @@ export function getGame(id: string): Game | undefined {
   return games.get(id);
 }
 
-export function joinGame(gameId: string, participantName: string): Participant {
+export function joinGame(
+  gameId: string,
+  participantName: string,
+  role: "player" | "spectator"
+): Participant {
   const game = games.get(gameId);
   if (!game) throw new Error(`Game ${gameId} not found`);
 
   const participant: Participant = {
     id: crypto.randomUUID(),
     name: participantName,
+    role,
   };
 
   game.participants.push(participant);
 
-  if (game.participants.length === 1) {
+  // First player (not spectator) becomes facilitator
+  if (role === "player" && !game.facilitatorId) {
     game.facilitatorId = participant.id;
   }
 

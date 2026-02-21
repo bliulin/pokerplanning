@@ -77,7 +77,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
       const name = String(formData.get("name") ?? "").trim();
       if (!name) return { error: "Please enter your name" };
 
-      const participant = joinGame(gameId, name);
+      const role = formData.get("role") === "spectator" ? "spectator" : "player";
+      const participant = joinGame(gameId, name, role);
       return redirect(`/game/${gameId}`, {
         headers: {
           "Set-Cookie": await playerCookie.serialize(participant.id),
@@ -147,6 +148,27 @@ export default function GameRoom() {
               required
               autoFocus
             />
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  value="player"
+                  defaultChecked
+                  className="accent-sky-400"
+                />
+                <span className="text-sm text-slate-300">Player</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  value="spectator"
+                  className="accent-sky-400"
+                />
+                <span className="text-sm text-slate-300">Spectator</span>
+              </label>
+            </div>
             <button
               type="submit"
               className="px-6 py-3 font-semibold text-slate-900 bg-sky-400 rounded-lg hover:bg-sky-300 transition-colors"
@@ -230,7 +252,13 @@ export default function GameRoom() {
                 </div>
               )}
 
-              <CardDeck selectedValue={myVote} />
+              {participant.role === "player" ? (
+                <CardDeck selectedValue={myVote} />
+              ) : (
+                <p className="text-slate-400 text-sm">
+                  Voting in progress — results will appear once votes are revealed.
+                </p>
+              )}
 
               {isFacilitator && (
                 <Form method="post" className="flex justify-center mt-2">

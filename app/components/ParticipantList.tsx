@@ -25,6 +25,7 @@ export default function ParticipantList({
           const hasVoted = p.id in votes;
           const voteValue = votes[p.id];
           const isYou = p.id === currentParticipantId;
+          const isSpectator = p.role === "spectator";
 
           return (
             <li
@@ -47,7 +48,9 @@ export default function ParticipantList({
                 )}
               </div>
               <span className="text-sm ml-2">
-                {revealed && hasVoted ? (
+                {isSpectator ? (
+                  <span className="text-xs text-slate-500">spectator</span>
+                ) : revealed && hasVoted ? (
                   <span className="font-bold text-sky-400">{voteValue}</span>
                 ) : hasVoted ? (
                   <span className="text-emerald-400">✓</span>
