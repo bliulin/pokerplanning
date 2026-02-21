@@ -76,6 +76,10 @@ export function revealVotes(gameId: string): void {
   game.currentRound.revealed = true;
 }
 
+export function deleteGame(gameId: string): void {
+  games.delete(gameId);
+}
+
 export function nextRound(gameId: string): void {
   const game = games.get(gameId);
   if (!game) throw new Error(`Game ${gameId} not found`);

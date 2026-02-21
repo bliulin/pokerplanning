@@ -14,6 +14,7 @@ import {
   castVote,
   revealVotes,
   nextRound,
+  deleteGame,
   type CardValue,
 } from "~/lib/game.server";
 import CardDeck from "~/components/CardDeck";
@@ -111,9 +112,33 @@ export async function action({ params, request }: ActionFunctionArgs) {
       return redirect(`/game/${gameId}`);
     }
 
+    case "close-game": {
+      deleteGame(gameId);
+      return redirect("/");
+    }
+
     default:
       return { error: "Unknown action" };
   }
+}
+
+export function ErrorBoundary() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-900">
+      <div className="text-center flex flex-col items-center gap-4">
+        <h1 className="text-2xl font-bold text-slate-50">Game not found</h1>
+        <p className="text-slate-400">
+          This game has been closed or does not exist.
+        </p>
+        <a
+          href="/"
+          className="px-6 py-3 font-semibold text-slate-900 bg-sky-400 rounded-lg hover:bg-sky-300 transition-colors"
+        >
+          Back to home
+        </a>
+      </div>
+    </div>
+  );
 }
 
 export default function GameRoom() {
@@ -196,9 +221,25 @@ export default function GameRoom() {
           <span className="text-sky-300 font-medium">{participant.name}</span>
         </span>
         {isFacilitator && (
-          <span className="ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-sky-900 text-sky-300">
-            Facilitator
-          </span>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-sky-900 text-sky-300">
+              Facilitator
+            </span>
+            <Form method="post">
+              <input type="hidden" name="intent" value="close-game" />
+              <button
+                type="submit"
+                onClick={(e) => {
+                  if (!window.confirm("Close this game? All progress will be lost and all players will be disconnected.")) {
+                    e.preventDefault();
+                  }
+                }}
+                className="text-xs font-medium px-2.5 py-1 rounded-full border border-red-800 text-red-400 hover:bg-red-900/40 transition-colors"
+              >
+                Close game
+              </button>
+            </Form>
+          </div>
         )}
       </header>
 
